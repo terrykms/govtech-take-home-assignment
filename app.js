@@ -1,15 +1,17 @@
 const express = require("express");
-const db = require("./database/db");
+const { getUsers } = require("./helpers/helpers");
+
 const app = express();
 const port = 3000;
 
-app.get("/users", (req, res) => {
-  db.all("SELECT * FROM users", (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: "Failed to retrieve data." });
-    }
-    res.json(rows);
-  });
+app.get("/users", async (req, res) => {
+  const { status, results, error } = await getUsers(req.query);
+
+  if (error) {
+    res.status(status).send({ error });
+  } else {
+    res.status(status).json({ results });
+  }
 });
 
 app.listen(port, () => {
