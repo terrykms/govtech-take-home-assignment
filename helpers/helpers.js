@@ -49,6 +49,58 @@ const getUsers = async (query) => {
   }
 };
 
+const uploadUsers = async (encodedcsv) => {
+  // decode URI-encoded csv
+  const decodedcsv = decodeURIComponent(encodedcsv);
+  const lines = decodedcsv.split("\n");
+  const data = lines.map((line) =>
+    line.split(",").map((entry) => entry.trim())
+  );
+
+  let hasErr = false;
+  let message = "";
+
+  db.serialize(() => {
+    db.run("BEGIN TRANSACTION");
+    const sql = `INSERT INTO users (name, salary) VALUES (?, ?)`;
+    for (let i = 1; i < data.length; i++) {
+      try {
+        let [name, salary] = data[i];
+
+        if (!name) {
+          hasErr = true;
+          throw new Error("Invalid name.");
+        }
+
+        if (!salary || isNaN(Number(salary))) {
+          hasErr = true;
+          throw new Error("Invalid salary.");
+        }
+
+        salary = parseFloat(salary);
+
+        if (salary < 0) continue; // skipped
+
+        db.run(sql, [name, salary]);
+      } catch (err) {
+        db.run("ROLLBACK");
+        hasErr = true;
+        message = err.message;
+        break;
+      }
+    }
+    if (!hasErr) {
+      db.run("COMMIT");
+    }
+  });
+  if (hasErr) {
+    return { status: 400, success: 0, message };
+  }
+  message = "Successfully uploaded csv data into database.";
+  return { status: 200, success: 1, message };
+};
+
 module.exports = {
   getUsers,
+  uploadUsers,
 };
