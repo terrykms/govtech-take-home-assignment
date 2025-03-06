@@ -1,10 +1,13 @@
 const express = require("express");
+const { initializeDb } = require("./database/init");
 const { getUsers, uploadUsers } = require("./helpers/helpers");
 
 const app = express();
 const port = 3000;
 
 app.use(express.urlencoded({ extended: true }));
+
+initializeDb();
 
 app.get("/users", async (req, res) => {
   const { status, results, error } = await getUsers(req.query);
