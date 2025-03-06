@@ -57,47 +57,41 @@ const uploadUsers = async (encodedcsv) => {
     line.split(",").map((entry) => entry.trim())
   );
 
-  let hasErr = false;
-  let message = "";
+  const selectQuery = `SELECT name FROM users WHERE name = ?`;
+  const insertQuery = `INSERT INTO users (name, salary) VALUES (?, ?)`;
+  const updateQuery = `UPDATE users SET salary = ? WHERE name = ?`;
 
-  db.serialize(() => {
-    db.run("BEGIN TRANSACTION");
-    const sql = `INSERT INTO users (name, salary) VALUES (?, ?)`;
-    for (let i = 1; i < data.length; i++) {
-      try {
-        let [name, salary] = data[i];
+  await db.runP("BEGIN TRANSACTION");
+  for (let i = 1; i < data.length; i++) {
+    try {
+      let [name, salary] = data[i];
 
-        if (!name) {
-          hasErr = true;
-          throw new Error("Invalid name.");
-        }
+      if (!name) throw new Error("Invalid name.");
 
-        if (!salary || isNaN(Number(salary))) {
-          hasErr = true;
-          throw new Error("Invalid salary.");
-        }
+      if (!salary || isNaN(Number(salary))) throw new Error("Invalid salary.");
 
-        salary = parseFloat(salary);
+      salary = parseFloat(salary);
 
-        if (salary < 0) continue; // skipped
+      if (salary < 0) continue; // skipped
 
-        db.run(sql, [name, salary]);
-      } catch (err) {
-        db.run("ROLLBACK");
-        hasErr = true;
-        message = err.message;
-        break;
-      }
+      // check if name exists in database
+      const { row, err } = await db.getP(selectQuery, [name]);
+
+      if (err) throw new Error(err.message);
+
+      if (row) await db.runP(updateQuery, [salary, name]);
+      else await db.runP(insertQuery, [name, salary]);
+    } catch (err) {
+      await db.runP("ROLLBACK");
+      return { status: 400, success: 0, message: err.message };
     }
-    if (!hasErr) {
-      db.run("COMMIT");
-    }
-  });
-  if (hasErr) {
-    return { status: 400, success: 0, message };
   }
-  message = "Successfully uploaded csv data into database.";
-  return { status: 200, success: 1, message };
+  await db.runP("COMMIT");
+  return {
+    status: 200,
+    success: 1,
+    message: "Successfully uploaded csv data into database.",
+  };
 };
 
 module.exports = {

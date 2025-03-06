@@ -1,4 +1,5 @@
 const sqlite3 = require("sqlite3").verbose();
+const { promisify } = require("util");
 const db = new sqlite3.Database("./database/database.sqlite", (err) => {
   if (err) {
     console.error("Error opening database", err);
@@ -7,16 +8,8 @@ const db = new sqlite3.Database("./database/database.sqlite", (err) => {
   }
 });
 
-// db.serialize(() => {
-//   db.run(
-//     `CREATE TABLE IF NOT EXISTS users (
-//     id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     name TEXT,
-//     salary NUMERIC
-//     )`
-//   );
-//   db.run(`INSERT INTO users (name, salary) VALUES (?, ?)`, ["Alex", 3000.0]);
-//   db.run(`INSERT INTO users (name, salary) VALUES (?, ?)`, ["Bryan", 3500.0]);
-// });
+db.allP = promisify(db.all).bind(db);
+db.runP = promisify(db.run).bind(db);
+db.getP = promisify(db.get).bind(db);
 
 module.exports = db;
