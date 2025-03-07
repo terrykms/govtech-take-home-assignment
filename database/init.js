@@ -7,7 +7,7 @@ const dummyData = [
   ["Mark", 5400.2],
   ["Sophia", 6100.0],
   ["James", 7200.3],
-  ["Liam", 9000.1],
+  ["Minseo", 9000.1],
   ["Emma", 3500.4],
   ["Lucas", 2700.15],
   ["Olivia", 1500.6],
