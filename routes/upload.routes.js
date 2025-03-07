@@ -7,11 +7,11 @@ router.post("/upload", async (req, res) => {
 
   // empty csv content
   if (!encodedcsv) {
-    res.status(400).send({ success: 0, message: "Empty csv content." });
+    res.status(400).send({ success: 0, error: "Empty csv content." });
     return;
   }
-  const { status, success, message } = await uploadUsers(encodedcsv);
-  res.status(status).send({ success, message });
+  const { status, success, message, error } = await uploadUsers(encodedcsv);
+  res.status(status).send({ success, message, error });
 });
 
 module.exports = router;

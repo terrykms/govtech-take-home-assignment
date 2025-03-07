@@ -11,6 +11,7 @@ const uploadUsers = async (encodedcsv) => {
 
     const header = data[0];
 
+    // checking for invalid header row
     if (
       header.length !== 2 ||
       header[0].toLowerCase() !== "name" ||
@@ -18,7 +19,7 @@ const uploadUsers = async (encodedcsv) => {
     ) {
       throw new Error("Invalid header row.");
     }
-
+    // checking for csv file with empty rows (apart from header)
     if (data.length === 1) {
       throw new Error("No data present in csv file.");
     }
@@ -50,14 +51,16 @@ const uploadUsers = async (encodedcsv) => {
         // check if name exists in database
         const row = await db.getP(selectQuery, [name]);
 
+        // update salary for matching name
         if (row) await db.runP(updateQuery, [salary, name]);
+        // insert new entry (name, salary)
         else await db.runP(insertQuery, [name, salary]);
       } catch (err) {
-        await db.runP("ROLLBACK");
-        return { status: 400, success: 0, message: err.message };
+        await db.runP("ROLLBACK"); // undo all inserts/updates
+        return { status: 400, success: 0, error: err.message };
       }
     }
-    await db.runP("COMMIT");
+    await db.runP("COMMIT"); // finalize and commit commands into database
     return {
       status: 200,
       success: 1,
@@ -67,7 +70,7 @@ const uploadUsers = async (encodedcsv) => {
     return {
       status: 400,
       success: 0,
-      message: err.message,
+      error: err.message,
     };
   }
 };
