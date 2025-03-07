@@ -123,4 +123,40 @@ describe("POST /api/upload", () => {
       salary: "five thousand",
     });
   });
+
+  test("POST with empty csv - should return 400 with success: 0", async () => {
+    const csvData = "";
+    const encodedCsvData = encodeURIComponent(csvData);
+    const res = await request(app)
+      .post("/api/upload")
+      .type("form")
+      .send({ file: encodedCsvData });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(0);
+  });
+
+  test("POST with invalid - should return 400 with success: 0", async () => {
+    const csvData = "Name,Salary";
+    const encodedCsvData = encodeURIComponent(csvData);
+    const res = await request(app)
+      .post("/api/upload")
+      .type("form")
+      .send({ file: encodedCsvData });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(0);
+  });
+
+  test("POST with only header row present - should return 400 with success: 0", async () => {
+    const csvData = "Name,Salary";
+    const encodedCsvData = encodeURIComponent(csvData);
+    const res = await request(app)
+      .post("/api/upload")
+      .type("form")
+      .send({ file: encodedCsvData });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(0);
+  });
 });
