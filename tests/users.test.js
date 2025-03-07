@@ -1,8 +1,18 @@
 const request = require("supertest");
+const fs = require("fs").promises;
 const { app, setupApp } = require("../app");
 
 beforeAll(async () => {
   await setupApp();
+});
+
+afterAll(async () => {
+  try {
+    await fs.unlink("./database/database.sqlite");
+    console.log("Database deleted successfully.");
+  } catch (err) {
+    console.error("Error deleting database", err);
+  }
 });
 
 describe("GET /api/users", () => {
