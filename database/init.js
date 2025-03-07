@@ -1,4 +1,4 @@
-const db = require("./db");
+const db = require("../config/db");
 
 const dummyData = [
   ["Alice", 4500.75],
