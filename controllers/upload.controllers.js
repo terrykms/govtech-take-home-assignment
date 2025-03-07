@@ -1,4 +1,4 @@
-const db = require("../database/db");
+const db = require("../config/db");
 
 const uploadUsers = async (encodedcsv) => {
   // decode URI-encoded csv
