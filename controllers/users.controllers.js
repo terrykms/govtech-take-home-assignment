@@ -2,29 +2,30 @@ const db = require("../config/db");
 
 const getUsers = async (query) => {
   let { min, max, offset, limit, sort } = query;
+
   // checks for params
-  if (
-    sort &&
-    sort.toLowerCase().valueOf() !== "name".valueOf() &&
-    sort.toLowerCase().valueOf() !== "salary".valueOf()
-  ) {
-    return {
-      status: 400,
-      error:
-        "Invalid params for 'sort'. Accepted values are 'name' and 'salary'.",
-    };
-  }
-  if (min && isNaN(Number(min))) {
-    return {
-      status: 400,
-      error: "Invalid params for 'min'.",
-    };
-  }
-  if (max && isNaN(Number(max))) {
-    return {
-      status: 400,
-      error: "Invalid params for 'max'.",
-    };
+  for (const [key, value] of Object.entries(query)) {
+    if (key === "sort") {
+      if (
+        !value ||
+        value.toLowerCase() === "name" ||
+        value.toLowerCase() === "salary"
+      ) {
+        // valid params for "sort"
+        continue;
+      }
+      return {
+        status: 400,
+        error:
+          "Invalid params for 'sort'. Accepted values are 'name' and 'salary'.",
+      };
+    } else {
+      if (!value || !isNaN(Number(value))) continue; // valid params
+      return {
+        status: 400,
+        error: `Invalid params for '${key}'.`,
+      };
+    }
   }
 
   min = min ? parseFloat(min) : 0.0;
