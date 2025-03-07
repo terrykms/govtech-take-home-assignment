@@ -2,14 +2,18 @@
   "name": "govtech-take-home-assignment",
   "version": "1.0.0",
   "description": "take home assignment for govtech swe internship",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "minseokim",
   "license": "ISC",
   "dependencies": {
     "express": "^4.21.2",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }
