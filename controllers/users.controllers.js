@@ -14,6 +14,18 @@ const getUsers = async (query) => {
         "Invalid params for 'sort'. Accepted values are 'name' and 'salary'.",
     };
   }
+  if (min && isNaN(Number(min))) {
+    return {
+      status: 400,
+      error: "Invalid params for 'min'.",
+    };
+  }
+  if (max && isNaN(Number(max))) {
+    return {
+      status: 400,
+      error: "Invalid params for 'max'.",
+    };
+  }
 
   min = min ? parseFloat(min) : 0.0;
   max = max ? parseFloat(max) : 4000.0;
