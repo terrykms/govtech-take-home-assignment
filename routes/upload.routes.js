@@ -1,5 +1,5 @@
 const express = require("express");
-const { uploadUsers } = require("../helpers/helpers");
+const uploadUsers = require("../controllers/upload.controllers");
 const router = express.Router();
 
 router.post("/upload", async (req, res) => {
