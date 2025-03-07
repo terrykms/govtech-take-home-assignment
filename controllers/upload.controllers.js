@@ -8,6 +8,21 @@ const uploadUsers = async (encodedcsv) => {
     const data = lines.map((line) =>
       line.split(",").map((entry) => entry.trim())
     );
+
+    const header = data[0];
+
+    if (
+      header.length !== 2 ||
+      header[0].toLowerCase() !== "name" ||
+      header[1].toLowerCase() !== "salary"
+    ) {
+      throw new Error("Invalid header row.");
+    }
+
+    if (data.length === 1) {
+      throw new Error("No data present in csv file.");
+    }
+
     const selectQuery = `SELECT name FROM users WHERE name = ?`;
     const insertQuery = `INSERT INTO users (name, salary) VALUES (?, ?)`;
     const updateQuery = `UPDATE users SET salary = ? WHERE name = ?`;
@@ -34,7 +49,7 @@ const uploadUsers = async (encodedcsv) => {
 
         // check if name exists in database
         const row = await db.getP(selectQuery, [name]);
-        console.log(row);
+
         if (row) await db.runP(updateQuery, [salary, name]);
         else await db.runP(insertQuery, [name, salary]);
       } catch (err) {
