@@ -33,10 +33,8 @@ const uploadUsers = async (encodedcsv) => {
         if (salary < 0) continue; // skipped
 
         // check if name exists in database
-        const { row, err } = await db.getP(selectQuery, [name]);
-
-        if (err) throw new Error(err.message);
-
+        const row = await db.getP(selectQuery, [name]);
+        console.log(row);
         if (row) await db.runP(updateQuery, [salary, name]);
         else await db.runP(insertQuery, [name, salary]);
       } catch (err) {
