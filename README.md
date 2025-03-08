@@ -8,8 +8,8 @@ Problem statement can be found [here](https://github.com/bryanlohxz/swe-take-hom
 
 ### Prerequisites
 Ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (latest LTS version recommended)
-- [npm](https://www.npmjs.com/) (comes with Node.js)
+- [Node.js](https://nodejs.org/)
+- [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 ### Installation
 
@@ -160,5 +160,9 @@ Therefore, an improvement I can make would be to use `multipart/form-data` to ac
 ## Assumptions
 
 - For simplicity, primary key in the database is set as type `INT` with `AUTO INCREMENT`. 
+- All backend API endpoints will start with `/api` to differentiate itself from frontend.
 - Since this is only a back-end project, I have assumed that the client-side would have converted the .csv data into URI-encoded format. 
 - While `initializeDb()` under `/database/init.js` is unfavourable for real use case, I have implemented it so that there will always be seed data whenever the server starts. 
+
+## Further Improvements
+- If the application gets bigger, it will be good practice to use middlewares to centralise error handling. Middlewares will also come in handy if we also incorporate authentication where we only allow authenticated users to access our backend API.
